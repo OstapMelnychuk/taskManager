@@ -58,11 +58,6 @@
             <version>0.2.1</version>
         </dependency>
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.7.0</version>
-        </dependency>
-        <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>2.0.1.Final</version> <!-- or the latest version -->
@@ -76,7 +71,24 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>4.0.1</version> <!-- or the version compatible with your servlet container -->
-            <scope>provided</scope> <!-- this scope indicates that the dependency is provided by the servlet container -->
+            <scope>provided
+            </scope> <!-- this scope indicates that the dependency is provided by the servlet container -->
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>2.2.16</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springdoc/springdoc-openapi-webmvc-core -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-webmvc-core</artifactId>
+            <version>1.8.0</version>
         </dependency>
     </dependencies>
 
@@ -108,7 +120,7 @@
                                 ${project.basedir}/src/main/resources/openapi/openApi.yaml
                             </inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.pryvat.bank.task.manager.api</apiPackage>
+                            <apiPackage>com.pryvat.bank.task.manager.controller</apiPackage>
                             <modelPackage>com.pryvat.bank.task.manager.model</modelPackage>
                             <supportingFilesToGenerate>
                                 ApiUtil.java
