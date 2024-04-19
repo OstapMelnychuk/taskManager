@@ -1,0 +1,99 @@
+openapi: 3.0.0
+info:
+  title: Task API
+  version: 1.0.0
+paths:
+  /tasks:
+    post:
+      summary: Create task
+      operationId: createTask
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '201':
+          description: Task successfully created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: long
+                    description: ID of the created task
+        '400':
+          description: Error creating task
+    get:
+      summary: Get list of tasks
+      operationId: getAllTasks
+      responses:
+        '200':
+          description: List of all tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+        '204':
+          description: No tasks available
+  /tasks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: long
+    delete:
+      summary: Delete task
+      operationId: deleteTask
+      responses:
+        '200':
+          description: Task successfully deleted
+        '404':
+          description: Task not found
+    put:
+      summary: Update task status
+      operationId: updateTaskStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+      responses:
+        '200':
+          description: Task status successfully updated
+        '400':
+          description: Error updating task status
+    patch:
+      summary: Change task fields
+      operationId: changeTaskFields
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Task'
+      responses:
+        '200':
+          description: Task fields successfully changed
+        '400':
+          description: Error changing task fields
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: long
+        status:
+          type: string
+        description:
+          type: string
