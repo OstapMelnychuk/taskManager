@@ -1,6 +1,6 @@
 package com.pryvat.bank.task.manager.delegate;
 
-import com.pryvat.bank.task.manager.controller.TasksApiDelegate;
+import com.pryvat.bank.task.manager.controller.TaskApiDelegate;
 import com.pryvat.bank.task.manager.domain.Task;
 import com.pryvat.bank.task.manager.model.TaskDTO;
 import com.pryvat.bank.task.manager.model.TaskRequest;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class TaskDelegate implements TasksApiDelegate {
+public class TaskDelegate implements TaskApiDelegate {
     private final TaskService taskService;
     private final ModelMapper modelMapper;
 

@@ -25,7 +25,6 @@ public class TelegramSendingService {
                 .builder()
                 .text(text)
                 .chatId(chatId.toString())
-                //Other possible parse modes: MARKDOWNV2, MARKDOWN, which allows to make text bold, and all other things
                 .parseMode(ParseMode.HTML)
                 .replyMarkup(replyKeyboard)
                 .build();

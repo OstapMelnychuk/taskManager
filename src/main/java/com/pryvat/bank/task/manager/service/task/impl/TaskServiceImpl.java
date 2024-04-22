@@ -4,6 +4,7 @@ import com.pryvat.bank.task.manager.domain.Task;
 import com.pryvat.bank.task.manager.entity.task.TaskEntity;
 import com.pryvat.bank.task.manager.entity.task.TaskStatus;
 import com.pryvat.bank.task.manager.exception.EntityNotFoundException;
+import com.pryvat.bank.task.manager.exception.WrongTaskStatusException;
 import com.pryvat.bank.task.manager.filter.task.impl.TaskCountFilter;
 import com.pryvat.bank.task.manager.filter.task.validator.TaskValidator;
 import com.pryvat.bank.task.manager.model.TaskDTO;
@@ -45,11 +46,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     public void updateTaskStatus(Long id, String status) {
-        TaskEntity taskEntity = taskRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException(id, MODEL_NAME));
+        TaskEntity taskEntity = taskRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(id, MODEL_NAME));
         Task primaryTask = modelMapper.map(taskEntity, Task.class);
 
-        taskEntity.setStatus(TaskStatus.valueOf(status));
+        try {
+            taskEntity.setStatus(TaskStatus.valueOf(status));
+        } catch (IllegalArgumentException e) {
+            throw new WrongTaskStatusException(status);
+        }
+
         TaskEntity updatedEntity = taskRepository.save(taskEntity);
         telegramTaskUpdateService.sendTaskUpdatedMessage(primaryTask,
                 modelMapper.map(updatedEntity, Task.class));

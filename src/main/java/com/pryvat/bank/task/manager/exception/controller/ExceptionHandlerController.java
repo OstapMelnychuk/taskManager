@@ -2,6 +2,7 @@ package com.pryvat.bank.task.manager.exception.controller;
 
 import com.pryvat.bank.task.manager.exception.EntityNotFoundException;
 import com.pryvat.bank.task.manager.exception.TaskValidationException;
+import com.pryvat.bank.task.manager.exception.WrongTaskStatusException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,12 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(WrongTaskStatusException.class)
+    public Map<String, String> handleWrongTaskStatusException(RuntimeException ex) {
+        return prepareErrorMessage(ex.getMessage());
     }
 
     private Map<String, String> prepareErrorMessage(String errorMessage) {

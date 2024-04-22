@@ -3,7 +3,7 @@ info:
   title: Task API
   version: 1.0.0
 paths:
-  /tasks:
+  /task:
     post:
       summary: Create task
       operationId: createTask
@@ -38,7 +38,7 @@ paths:
                   $ref: '#/components/schemas/TaskDTO'
         '204':
           description: No tasks available
-  /tasks/{id}:
+  /task/{id}:
     parameters:
       - name: id
         in: path
@@ -55,21 +55,6 @@ paths:
           description: Task successfully deleted
         '404':
           description: Task not found
-    put:
-      summary: Update task status
-      operationId: updateTaskStatus
-      parameters:
-        - schema:
-            type: string
-          name: status
-          in: path
-          description: task status
-          required: true
-      responses:
-        '200':
-          description: Task status successfully updated
-        '400':
-          description: Error updating task status
     patch:
       summary: Change task fields
       operationId: changeTaskFields
@@ -84,6 +69,29 @@ paths:
           description: Task fields successfully changed
         '400':
           description: Error changing task fields
+  /task/{id}/{status}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+          description: id of the task
+      - name: status
+        in: path
+        required: true
+        schema:
+          type: string
+          description: New task status
+    put:
+      summary: Update task status
+      operationId: updateTaskStatus
+      responses:
+        '200':
+          description: Task status successfully updated
+        '400':
+          description: Error updating task status
 components:
   schemas:
     TaskRequest:
