@@ -1,7 +1,10 @@
-package com.pryvat.bank.task.manager.filter.task;
+package com.pryvat.bank.task.manager.filter.task.impl;
 
 import com.pryvat.bank.task.manager.domain.Task;
-import com.pryvat.bank.task.manager.repository.TaskRepository;
+import com.pryvat.bank.task.manager.filter.task.TaskFilter;
+import com.pryvat.bank.task.manager.filter.task.TaskFiltration;
+import com.pryvat.bank.task.manager.filter.task.TaskValidationResult;
+import com.pryvat.bank.task.manager.repository.task.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

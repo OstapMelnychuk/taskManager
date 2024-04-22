@@ -4,12 +4,12 @@ import com.pryvat.bank.task.manager.domain.Task;
 import com.pryvat.bank.task.manager.entity.task.TaskEntity;
 import com.pryvat.bank.task.manager.entity.task.TaskStatus;
 import com.pryvat.bank.task.manager.exception.EntityNotFoundException;
-import com.pryvat.bank.task.manager.filter.task.TaskCountFilter;
-import com.pryvat.bank.task.manager.filter.task.TaskValidator;
+import com.pryvat.bank.task.manager.filter.task.impl.TaskCountFilter;
+import com.pryvat.bank.task.manager.filter.task.validator.TaskValidator;
 import com.pryvat.bank.task.manager.model.TaskDTO;
-import com.pryvat.bank.task.manager.repository.TaskRepository;
+import com.pryvat.bank.task.manager.repository.task.TaskRepository;
 import com.pryvat.bank.task.manager.service.task.TaskService;
-import jakarta.validation.Valid;
+import com.pryvat.bank.task.manager.telegram.service.TelegramTaskUpdateService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -23,12 +23,14 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final ModelMapper modelMapper;
     private final TaskValidator taskValidator;
+    private final TelegramTaskUpdateService telegramTaskUpdateService;
     private static final String MODEL_NAME = "Task";
 
-    public Long createTask(@Valid Task task) {
+    public Long createTask(Task task) {
         taskValidator.validate(task);
         TaskEntity taskEntity = modelMapper.map(task, TaskEntity.class);
         TaskEntity savedEntity = taskRepository.save(taskEntity);
+        telegramTaskUpdateService.sendTaskCreationMessage(modelMapper.map(savedEntity, Task.class));
         return savedEntity.getId();
     }
 
@@ -45,16 +47,26 @@ public class TaskServiceImpl implements TaskService {
     public void updateTaskStatus(Long id, String status) {
         TaskEntity taskEntity = taskRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException(id, MODEL_NAME));
+        Task primaryTask = modelMapper.map(taskEntity, Task.class);
+
         taskEntity.setStatus(TaskStatus.valueOf(status));
-        taskRepository.save(taskEntity);
+        TaskEntity updatedEntity = taskRepository.save(taskEntity);
+        telegramTaskUpdateService.sendTaskUpdatedMessage(primaryTask,
+                modelMapper.map(updatedEntity, Task.class));
     }
 
-    public void updateTaskFields(@Valid Task task) {
+    public void updateTaskFields(Task task) {
         taskValidator.validate(task, List.of(TaskCountFilter.class));
         TaskEntity taskEntity = taskRepository.findById(task.getId()).orElseThrow(()
                 -> new EntityNotFoundException(task.getId(), MODEL_NAME));
+        Task primaryTask = modelMapper.map(taskEntity, Task.class);
+
         taskEntity.setDescription(task.getDescription());
         taskEntity.setStatus(TaskStatus.valueOf(task.getStatus().getValue()));
-        taskRepository.save(taskEntity);
+        taskEntity.setName(task.getName());
+
+        TaskEntity updatedEntity = taskRepository.save(taskEntity);
+        telegramTaskUpdateService.sendTaskUpdatedMessage(primaryTask,
+                modelMapper.map(updatedEntity, Task.class));
     }
 }

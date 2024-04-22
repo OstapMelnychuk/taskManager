@@ -31,18 +31,24 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleNotFoundException(RuntimeException ex) {
-       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    public Map<String, String> handleNotFoundException(RuntimeException ex) {
+       return prepareErrorMessage(ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(TaskValidationException.class)
-    public ResponseEntity<String> handleTaskValidationException(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    public Map<String, String> handleTaskValidationException(RuntimeException ex) {
+        return prepareErrorMessage(ex.getMessage());
     }
 
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         return super.handleHttpMessageNotReadable(ex, headers, status, request);
+    }
+
+    private Map<String, String> prepareErrorMessage(String errorMessage) {
+        HashMap<String, String> errorMessages = new HashMap<>();
+        errorMessages.put("message", errorMessage);
+        return errorMessages;
     }
 }

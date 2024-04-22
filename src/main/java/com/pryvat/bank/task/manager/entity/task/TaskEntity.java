@@ -3,6 +3,7 @@ package com.pryvat.bank.task.manager.entity.task;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class TaskEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NotBlank
+    @Pattern(regexp = "^[a-zA-Z0-9_]*$", message = "Task name must not include any special character except _")
     @Length(min = 3, max = 64, message = "Name length must be between 3 and 64 letters")
     private String name;
     @Enumerated(EnumType.STRING)

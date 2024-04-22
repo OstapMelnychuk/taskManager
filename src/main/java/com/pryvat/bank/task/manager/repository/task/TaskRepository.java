@@ -1,4 +1,4 @@
-package com.pryvat.bank.task.manager.repository;
+package com.pryvat.bank.task.manager.repository.task;
 
 import com.pryvat.bank.task.manager.entity.task.TaskEntity;
 import com.pryvat.bank.task.manager.entity.task.TaskStatus;
