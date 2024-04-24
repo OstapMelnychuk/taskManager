@@ -3,7 +3,12 @@ package com.pryvat.bank.task.manager.exception.controller;
 import com.pryvat.bank.task.manager.exception.EntityNotFoundException;
 import com.pryvat.bank.task.manager.exception.TaskValidationException;
 import com.pryvat.bank.task.manager.exception.WrongTaskStatusException;
+import com.pryvat.bank.task.manager.router.DataSourceRouter;
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -17,8 +22,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestControllerAdvice
+@Log4j2
 public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
@@ -33,7 +40,7 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(EntityNotFoundException.class)
     public Map<String, String> handleNotFoundException(RuntimeException ex) {
-       return prepareErrorMessage(ex.getMessage());
+        return prepareErrorMessage(ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -51,6 +58,18 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     @ExceptionHandler(WrongTaskStatusException.class)
     public Map<String, String> handleWrongTaskStatusException(RuntimeException ex) {
         return prepareErrorMessage(ex.getMessage());
+    }
+
+    @ExceptionHandler(value = {DataAccessResourceFailureException.class, InvalidDataAccessResourceUsageException.class})
+    public void changeDBToPostgres(RuntimeException e) {
+        if (Objects.isNull(DataSourceRouter.getDataSourceKey()) || DataSourceRouter.getDataSourceKey().equals("h2")) {
+            log.error(e);
+            log.info("Switching database to postgres");
+            DataSourceRouter.setDataSourceKey("postgresql");
+            System.out.println(DataSourceRouter.getDataSourceKey());
+            return;
+        }
+        throw e;
     }
 
     private Map<String, String> prepareErrorMessage(String errorMessage) {

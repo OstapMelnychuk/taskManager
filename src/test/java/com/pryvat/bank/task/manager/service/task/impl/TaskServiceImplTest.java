@@ -56,12 +56,12 @@ class TaskServiceImplTest {
     @Test
     void getAllTasks() {
         List<TaskDTO> allTasks = taskService.getAllTasks();
+
         assertEquals(2, allTasks.size());
     }
 
     @Test
     void updateTaskStatus() {
-
         taskService.updateTaskStatus(100L, "DONE");
 
         assertEquals(TaskStatus.DONE, taskRepository.findById(100L).get().getStatus());
