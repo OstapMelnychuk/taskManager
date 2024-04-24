@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * TelegramTaskUpdateService that sends all the task updates to the user
+ */
 @Component
 @RequiredArgsConstructor
 public class TelegramTaskUpdateService {
@@ -19,10 +22,20 @@ public class TelegramTaskUpdateService {
     private final ReplyKeyboardMarkupProvider replyKeyboardMarkupProvider;
     private final TelegramUserRepository telegramUserRepository;
     private final ModelMapper modelMapper;
+
+    /**
+     * Method that sends the notification that specific task was created
+     * @param task that have been created
+     */
     public void sendTaskCreationMessage(Task task) {
         sendUpdateMessageToAllUsers(taskCreatedMessage(modelMapper.map(task, TelegramTaskDTO.class)));
     }
 
+    /**
+     * Method that sends the notification that specific task was updated
+     * @param primaryTask task before updating
+     * @param updatedTask task after updating
+     */
     public void sendTaskUpdatedMessage(Task primaryTask, Task updatedTask) {
         sendUpdateMessageToAllUsers(taskUpdatedMessage(modelMapper.map(primaryTask, TelegramTaskDTO.class),
                 modelMapper.map(updatedTask, TelegramTaskDTO.class)));

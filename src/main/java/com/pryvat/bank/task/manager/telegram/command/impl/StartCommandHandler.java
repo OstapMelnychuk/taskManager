@@ -9,12 +9,19 @@ import com.pryvat.bank.task.manager.telegram.service.TelegramSendingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * Handles /start command
+ */
 @Component
 @RequiredArgsConstructor
 public class StartCommandHandler implements CommandHandler {
     private final TelegramSendingService telegramSendingService;
     private final ReplyKeyboardMarkupProvider replyKeyboardMarkupProvider;
 
+    /**
+     * Sends a greeting message to a user
+     * @param userRequest that contains update data
+     */
     @Override
     public void handleCommand(UserRequest userRequest) {
         telegramSendingService.sendMessage(userRequest.getId(),

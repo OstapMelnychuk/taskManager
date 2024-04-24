@@ -8,11 +8,18 @@ import com.pryvat.bank.task.manager.telegram.service.TelegramSendingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * HelpCommandHandler that handles Help command
+ */
 @Component
 @RequiredArgsConstructor
 public class HelpCommandHandler implements CommandHandler {
     private final TelegramSendingService telegramSendingService;
 
+    /**
+     * Handles Help command. Sends command description message to a user
+     * @param userRequest that contains update data
+     */
     @Override
     public void handleCommand(UserRequest userRequest) {
         telegramSendingService.sendMessage(userRequest.getId(), StandartMessages.HELP_MESSAGE);

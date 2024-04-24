@@ -6,18 +6,31 @@ import com.pryvat.bank.task.manager.filter.task.TaskFiltration;
 import com.pryvat.bank.task.manager.filter.task.TaskValidationResult;
 import com.pryvat.bank.task.manager.repository.task.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * TaskCount filter that checks max allowed quantity for tasks in the database
+ */
 @Component
 @TaskFiltration
 @RequiredArgsConstructor
 public class TaskCountFilter implements TaskFilter {
     private final TaskRepository taskRepository;
-    private static final int ROW_COUNT_LIMIT = 3;
+    /**
+     * Maximum quantity of task allowed to be created. Can be set in application.properties
+     */
+    @Value("${task.max-row-quantity}")
+    private int rowCountLimit;
     private static final String ERROR_MESSAGE = "Reached task creation limit. Delete some tasks to create new ones";
 
+    /**
+     * Method that validates max task quantity in a database
+     * @param task task to validate
+     * @return {@link TaskValidationResult} that contains validation result and error message
+     */
     @Override
     public TaskValidationResult validate(Task task) {
-        return new TaskValidationResult(taskRepository.count() < ROW_COUNT_LIMIT, ERROR_MESSAGE);
+        return new TaskValidationResult(taskRepository.count() < rowCountLimit, ERROR_MESSAGE);
     }
 }

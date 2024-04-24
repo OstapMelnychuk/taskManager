@@ -18,15 +18,37 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementation of {@link com.pryvat.bank.task.manager.service.task.TaskService}
+ * Service that provides implementation of basic CRUD operations for Tasks
+ */
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
+    /**
+     * Task repository to get task data from database
+     */
     private final TaskRepository taskRepository;
+    /**
+     * Model mapper to map Task domain model to entity and vise versa
+     */
     private final ModelMapper modelMapper;
+    /**
+     * Task Validator that validates business rules during task creation/updating
+     */
     private final TaskValidator taskValidator;
+    /**
+     * Telegram service that provides updates when task is updated/created
+     */
     private final TelegramTaskUpdateService telegramTaskUpdateService;
     private static final String MODEL_NAME = "Task";
 
+    /**
+     * Method that creates task. Executes different validations for business logic
+     * @param task Domain model of a task. Should contain name, status and description for a task
+     * @return id of created task
+     * @throws com.pryvat.bank.task.manager.exception.TaskValidationException if any validation fails
+     */
     public Long createTask(Task task) {
         taskValidator.validate(task);
         TaskEntity taskEntity = modelMapper.map(task, TaskEntity.class);
@@ -35,16 +57,31 @@ public class TaskServiceImpl implements TaskService {
         return savedEntity.getId();
     }
 
+    /**
+     * Method that deletes task from the database
+     * @param id task id
+     */
     public void deleteTask(Long id) {
         taskRepository.deleteById(id);
     }
 
+    /**
+     * Method that returns a list of all created tasks
+     * @return a list of all created tasks
+     */
     public List<TaskDTO> getAllTasks() {
         return taskRepository.findAll().stream()
                 .map(taskEntity -> modelMapper.map(taskEntity, TaskDTO.class))
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Method for updating task status
+     * @param id task id
+     * @param status status of the task {@link com.pryvat.bank.task.manager.entity.task.TaskStatus}
+     * @throws WrongTaskStatusException if status task is invalid
+     * @throws EntityNotFoundException if task is not found
+     */
     public void updateTaskStatus(Long id, String status) {
         TaskEntity taskEntity = taskRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(id, MODEL_NAME));
@@ -61,6 +98,12 @@ public class TaskServiceImpl implements TaskService {
                 modelMapper.map(updatedEntity, Task.class));
     }
 
+    /**
+     * Method that updates task fields and validates business logic rules to an updated task
+     * @param task Domain model of a task. Should contain name, status and description for a task to be updated
+     * @throws com.pryvat.bank.task.manager.exception.TaskValidationException if any validation fails
+     * @throws EntityNotFoundException if task is not found
+     */
     public void updateTaskFields(Task task) {
         taskValidator.validate(task, List.of(TaskCountFilter.class));
         TaskEntity taskEntity = taskRepository.findById(task.getId()).orElseThrow(()

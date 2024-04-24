@@ -7,13 +7,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Telegram user database representation
+ */
 @Data
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class TelegramUser {
+    /**
+     * Chat id identifier
+     */
     @Id
     private Long chatId;
+    /**
+     * Name of the user or chat
+     */
     private String name;
 }

@@ -1,5 +1,8 @@
 package com.pryvat.bank.task.manager.telegram.constants;
 
+/**
+ * A constants class that contains all the messages returned to a user
+ */
 public class StandartMessages {
     public static final String START_MESSAGE = """
            Greetings. Welcome to a test version of the TaskManager bot.

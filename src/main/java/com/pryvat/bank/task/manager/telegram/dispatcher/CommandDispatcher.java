@@ -8,10 +8,18 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+/**
+ * CommandDispatcher that dispatcher command to a specific {@link CommandHandler}
+ */
 @Component
 @RequiredArgsConstructor
 public class CommandDispatcher {
     private final ApplicationContext applicationContext;
+
+    /**
+     * Method that dispatches user updates to a specific {@link CommandHandler} to process
+     * @param userRequest user updates from a bot
+     */
     public void dispatchCommandToAHandler(UserRequest userRequest) {
         Map<String, CommandHandler> handlers = applicationContext.getBeansOfType(CommandHandler.class);
         for (CommandHandler commandHandler : handlers.values()) {

@@ -1,5 +1,8 @@
 package com.pryvat.bank.task.manager.telegram.constants;
 
+/**
+ * A constants class that contains all bot possible commands
+ */
 public class Commands {
     public final static String HELP = "Help";
     public final static String SUBSCRIBE = "Subscribe";

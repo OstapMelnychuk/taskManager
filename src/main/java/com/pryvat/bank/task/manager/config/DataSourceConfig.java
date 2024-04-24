@@ -10,11 +10,21 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Two datasource configuration.
+ * H2 - primary
+ * Postgres - secondary
+ */
 @Configuration
 @RequiredArgsConstructor
 public class DataSourceConfig {
     private final H2DatabaseConfig h2DatabaseConfig;
     private final PostgresDatabaseConfig postgresDatabaseConfig;
+
+    /**
+     * Method that configures two data sources for switching
+     * @return application data source
+     */
     @Bean
     public DataSource dataSource() {
         DataSourceRouter router = new DataSourceRouter();

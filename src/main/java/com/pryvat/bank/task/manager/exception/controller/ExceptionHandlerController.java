@@ -5,7 +5,6 @@ import com.pryvat.bank.task.manager.exception.TaskValidationException;
 import com.pryvat.bank.task.manager.exception.WrongTaskStatusException;
 import com.pryvat.bank.task.manager.router.DataSourceRouter;
 import jakarta.validation.ConstraintViolationException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
@@ -61,15 +60,15 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {DataAccessResourceFailureException.class, InvalidDataAccessResourceUsageException.class})
-    public void changeDBToPostgres(RuntimeException e) {
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Map<String, String> changeDBToPostgres(RuntimeException e) {
         if (Objects.isNull(DataSourceRouter.getDataSourceKey()) || DataSourceRouter.getDataSourceKey().equals("h2")) {
             log.error(e);
             log.info("Switching database to postgres");
             DataSourceRouter.setDataSourceKey("postgresql");
             System.out.println(DataSourceRouter.getDataSourceKey());
-            return;
         }
-        throw e;
+        return prepareErrorMessage("Changing database source. Please repeat request");
     }
 
     private Map<String, String> prepareErrorMessage(String errorMessage) {

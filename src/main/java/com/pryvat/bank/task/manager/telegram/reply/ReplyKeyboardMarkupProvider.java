@@ -9,10 +9,19 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 
 import java.util.List;
 
+/**
+ * ReplyKeyboardMarkupProvider that provides keyboard for a user
+ */
 @Component
 @RequiredArgsConstructor
 public class ReplyKeyboardMarkupProvider {
     private final TelegramUserRepository telegramUserRepository;
+
+    /**
+     * Method that creates a keyboard for a user
+     * @param chatId that is used to check if a user is subscribed for the task tracking
+     * @return user keyboard with possible bot actions
+     */
     public ReplyKeyboardMarkup buildMainKeyboard(Long chatId) {
         KeyboardRow firstKeyboardRow = new KeyboardRow();
         KeyboardRow secondKeyboardRow = new KeyboardRow();

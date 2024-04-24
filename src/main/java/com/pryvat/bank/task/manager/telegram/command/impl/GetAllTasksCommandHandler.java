@@ -15,6 +15,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Handler that sends all created tasks to a specific chat
+ */
 @Component
 @RequiredArgsConstructor
 public class GetAllTasksCommandHandler implements CommandHandler {
@@ -22,6 +25,11 @@ public class GetAllTasksCommandHandler implements CommandHandler {
     private final TelegramSendingService telegramSendingService;
     private final ModelMapper modelMapper;
 
+    /**
+     * Method that handles Get all tasks command
+     * Sends all tasks created to a user
+     * @param userRequest that contains update data
+     */
     @Override
     public void handleCommand(UserRequest userRequest) {
         List<TaskEntity> taskEntities = taskRepository.findAll();

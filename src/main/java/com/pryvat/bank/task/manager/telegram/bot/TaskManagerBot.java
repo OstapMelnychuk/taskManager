@@ -10,12 +10,25 @@ import org.telegram.telegrambots.longpolling.starter.SpringLongPollingBot;
 import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateConsumer;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+/**
+ * Telegram bot for tracking task creation/updating
+ */
 @Component
 @RequiredArgsConstructor
 public class TaskManagerBot implements SpringLongPollingBot, LongPollingSingleThreadUpdateConsumer {
+    /**
+     * Basic Telegram bot configuration
+     */
     private final TelegramConfiguration configuration;
+    /**
+     * Command dispatcher that dispatches command to a specific {@link com.pryvat.bank.task.manager.telegram.command.CommandHandler}
+     */
     private final CommandDispatcher commandDispatcher;
 
+    /**
+     * Method that consumes updates from a telegram bot and dispatches it to a specific {@link com.pryvat.bank.task.manager.telegram.command.CommandHandler}
+     * @param update updates from a telegram bot
+     */
     @Override
     public void consume(Update update) {
         // We check if the update has a message and the message has text
@@ -28,6 +41,10 @@ public class TaskManagerBot implements SpringLongPollingBot, LongPollingSingleTh
         }
     }
 
+    /**
+     * Method that provides Telegram API with a telegram bot token
+     * @return telegram bot api token
+     */
     @Override
     public String getBotToken() {
         return configuration.getBotToken();

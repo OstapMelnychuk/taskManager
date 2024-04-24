@@ -11,12 +11,20 @@ import com.pryvat.bank.task.manager.telegram.service.TelegramSendingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+/**
+ * SubscribeCommandHandler that handles Subscribe command
+ */
 @Component
 @RequiredArgsConstructor
 public class SubscribeCommandHandler implements CommandHandler {
     private final TelegramUserRepository telegramUserRepository;
     private final TelegramSendingService telegramSendingService;
     private final ReplyKeyboardMarkupProvider replyKeyboardMarkupProvider;
+
+    /**
+     * Method that saves new telegram user to a database for tracking the task creation/updating
+     * @param userRequest that contains update data
+     */
     @Override
     public void handleCommand(UserRequest userRequest) {
         TelegramUser telegramUser = TelegramUser.builder()
