@@ -11,7 +11,10 @@ import com.pryvat.bank.task.manager.repository.task.TaskRepository;
 import com.pryvat.bank.task.manager.service.task.TaskService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -31,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @AutoConfigureTestDatabase
 @TestPropertySource(locations = "classpath:application-test.properties")
 @Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class TaskServiceImplTest {
     @Autowired
     private TaskService taskService;
@@ -38,12 +42,13 @@ class TaskServiceImplTest {
     private TaskRepository taskRepository;
 
     @Test
+    @Order(1)
     void createTask() {
         Task task = prepareTasks().get(0);
 
         Long taskId = taskService.createTask(task);
 
-        assertEquals(2L, taskId);
+        assertEquals(1L, taskId);
     }
 
     @Test

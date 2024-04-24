@@ -9,7 +9,10 @@ import com.pryvat.bank.task.manager.model.TaskDTO;
 import com.pryvat.bank.task.manager.model.TaskRequest;
 import com.pryvat.bank.task.manager.repository.task.TaskRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -35,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @TestPropertySource(locations = "classpath:application-test.properties")
 @AutoConfigureMockMvc
 @Transactional
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TaskApiTest {
     @Autowired
     private MockMvc mvc;
@@ -45,6 +49,7 @@ public class TaskApiTest {
     private final String TASK_URL = "/task";
 
     @Test
+    @Order(1)
     void testCreateTask() throws Exception {
         MvcResult mvcResult = mvc.perform(post(TASK_URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -82,8 +87,8 @@ public class TaskApiTest {
         taskRequest.setDescription("changed1");
 
         mvc.perform(patch(TASK_URL + "/100")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(taskRequest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(taskRequest)))
                 .andExpect(status().isOk());
 
         TaskEntity taskEntity = taskRepository.findById(100L).get();
@@ -99,6 +104,84 @@ public class TaskApiTest {
 
         TaskEntity taskEntity = taskRepository.findById(100L).get();
         assertEquals(TaskStatus.DONE, taskEntity.getStatus());
+    }
+
+    @Test
+    void testCreateTaskViolatingNameLengthConstraint() throws Exception {
+        TaskRequest taskRequest = createTaskRequest();
+        taskRequest.setName("na");
+
+        mvc.perform(post(TASK_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(taskRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateTaskWithNullName() throws Exception {
+        TaskRequest taskRequest = createTaskRequest();
+        taskRequest.setName(null);
+
+        mvc.perform(post(TASK_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(taskRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateTaskWithNameContainingSpecialCharacters() throws Exception {
+        TaskRequest taskRequest = createTaskRequest();
+        taskRequest.setName("name!@#");
+
+        mvc.perform(post(TASK_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(taskRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateTaskViolatingDescriptionLengthConstraint() throws Exception {
+        TaskRequest taskRequest = createTaskRequest();
+        taskRequest.setDescription("desc");
+
+        mvc.perform(post(TASK_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(taskRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testChangeTaskWithWrongStatus() throws Exception {
+        mvc.perform(put(TASK_URL + "/100/WrongStatus"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateTaskWithSameNameAndStatusViolation() throws Exception {
+        TaskRequest taskRequest = new TaskRequest();
+        taskRequest.setName("first");
+        taskRequest.setStatus(Status.CREATED);
+
+        mvc.perform(post(TASK_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(taskRequest)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateTaskWithMaximumTaskLimitViolation() throws Exception {
+        TaskRequest taskRequest = createTaskRequest();
+        TaskEntity taskEntity = TaskEntity.builder()
+                .name("test")
+                .status(TaskStatus.CREATED)
+                .description("testdesc")
+                .build();
+
+        taskRepository.save(taskEntity);
+        mvc.perform(post(TASK_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(taskRequest)))
+                .andExpect(status().isBadRequest());
     }
 
     private TaskRequest createTaskRequest() {
