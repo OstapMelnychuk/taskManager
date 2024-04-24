@@ -21,13 +21,13 @@ What was done:
 - Added telegram bot for tracking task creation/updating
 - Added JavaDoc and logging 
 ## How to run
-Just pull the project and run ```mvn clean install``` to generate OpenAPI classes.
+Just pull the project (feature/taskManager branch) and run ```mvn clean install``` to generate OpenAPI classes.
 To test the telegram bot run the application and try to create/update update some tasks.
 
 To test endpoints you can use swagger via this [link](http://localhost:8080/swagger-ui.html#/)
 
 Telegram bot [link](https://t.me/task_manager_test_pb_bot)
 ## P.S.
-I will be grateful for a review.
+I have created a PR with all the main changes. I will be grateful for a review.
 
 If you have any suggestions you can contact me via [LinkedIn](https://www.linkedin.com/in/ostap-melnychuk-b368201a2/)
