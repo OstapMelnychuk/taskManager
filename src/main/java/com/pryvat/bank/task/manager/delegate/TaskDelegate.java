@@ -13,6 +13,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+/**
+ * Implementation of OpenAPI {@link TaskApiDelegate}.
+ *
+ */
 @Component
 @RequiredArgsConstructor
 public class TaskDelegate implements TaskApiDelegate {
