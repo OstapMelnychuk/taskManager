@@ -9,6 +9,7 @@ import com.pryvat.bank.task.manager.telegram.model.UserRequest;
 import com.pryvat.bank.task.manager.telegram.reply.ReplyKeyboardMarkupProvider;
 import com.pryvat.bank.task.manager.telegram.service.TelegramSendingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class SubscribeCommandHandler implements CommandHandler {
     private final TelegramUserRepository telegramUserRepository;
     private final TelegramSendingService telegramSendingService;
@@ -27,6 +29,7 @@ public class SubscribeCommandHandler implements CommandHandler {
      */
     @Override
     public void handleCommand(UserRequest userRequest) {
+        log.info("Handling %s command".formatted(getCommandName()));
         TelegramUser telegramUser = TelegramUser.builder()
                 .chatId(userRequest.getId())
                 .name(userRequest.getUpdate().getMessage().getFrom().getUserName())
@@ -35,6 +38,7 @@ public class SubscribeCommandHandler implements CommandHandler {
         telegramSendingService.sendMessage(userRequest.getId(),
                 StandartMessages.SUBSCRIBE_MESSAGE,
                 replyKeyboardMarkupProvider.buildMainKeyboard(userRequest.getId()));
+        log.info("Successfully subscribed chat with id %d".formatted(userRequest.getId()));
     }
     @Override
     public String getCommandName() {

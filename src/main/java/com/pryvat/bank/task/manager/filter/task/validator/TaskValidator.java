@@ -6,6 +6,7 @@ import com.pryvat.bank.task.manager.filter.task.TaskFilter;
 import com.pryvat.bank.task.manager.filter.task.TaskFiltration;
 import com.pryvat.bank.task.manager.filter.task.TaskValidationResult;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import java.util.Map;
  */
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class TaskValidator {
     private final ApplicationContext applicationContext;
 
@@ -39,6 +41,7 @@ public class TaskValidator {
      * @param excludedFilters filters that will not be used during validation
      */
     public void validate(Task task, List<Class> excludedFilters) {
+        log.info("Begin to validate task");
         Map<String, Object> filters = applicationContext.getBeansWithAnnotation(TaskFiltration.class);
         for (Object filter : filters.values()) {
             if (filter instanceof TaskFilter && !excludedFilters.contains(filter.getClass())) {

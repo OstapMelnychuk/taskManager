@@ -6,6 +6,7 @@ import com.pryvat.bank.task.manager.filter.task.TaskFiltration;
 import com.pryvat.bank.task.manager.filter.task.TaskValidationResult;
 import com.pryvat.bank.task.manager.repository.task.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @TaskFiltration
 @RequiredArgsConstructor
+@Log4j2
 public class TaskCountFilter implements TaskFilter {
     private final TaskRepository taskRepository;
     /**
@@ -31,6 +33,7 @@ public class TaskCountFilter implements TaskFilter {
      */
     @Override
     public TaskValidationResult validate(Task task) {
+        log.info("Validating task row count");
         return new TaskValidationResult(taskRepository.count() < rowCountLimit, ERROR_MESSAGE);
     }
 }

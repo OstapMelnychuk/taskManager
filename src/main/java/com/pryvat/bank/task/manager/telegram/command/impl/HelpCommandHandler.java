@@ -6,6 +6,7 @@ import com.pryvat.bank.task.manager.telegram.constants.StandartMessages;
 import com.pryvat.bank.task.manager.telegram.model.UserRequest;
 import com.pryvat.bank.task.manager.telegram.service.TelegramSendingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
+@Log4j2
 public class HelpCommandHandler implements CommandHandler {
     private final TelegramSendingService telegramSendingService;
 
@@ -22,7 +24,9 @@ public class HelpCommandHandler implements CommandHandler {
      */
     @Override
     public void handleCommand(UserRequest userRequest) {
+        log.info("Handling %s command".formatted(getCommandName()));
         telegramSendingService.sendMessage(userRequest.getId(), StandartMessages.HELP_MESSAGE);
+        log.info("Successfully handled %s command".formatted(getCommandName()));
     }
 
     @Override

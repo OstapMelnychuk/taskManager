@@ -12,6 +12,7 @@ import com.pryvat.bank.task.manager.repository.task.TaskRepository;
 import com.pryvat.bank.task.manager.service.task.TaskService;
 import com.pryvat.bank.task.manager.telegram.service.TelegramTaskUpdateService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class TaskServiceImpl implements TaskService {
     /**
      * Task repository to get task data from database
@@ -53,6 +55,7 @@ public class TaskServiceImpl implements TaskService {
         taskValidator.validate(task);
         TaskEntity taskEntity = modelMapper.map(task, TaskEntity.class);
         TaskEntity savedEntity = taskRepository.save(taskEntity);
+        log.info("Task with id %d has been created".formatted(savedEntity.getId()));
         telegramTaskUpdateService.sendTaskCreationMessage(modelMapper.map(savedEntity, Task.class));
         return savedEntity.getId();
     }
@@ -62,7 +65,9 @@ public class TaskServiceImpl implements TaskService {
      * @param id task id
      */
     public void deleteTask(Long id) {
+        log.info("Deleting task with id %d".formatted(id));
         taskRepository.deleteById(id);
+        log.info("Task with id %d has been deleted".formatted(id));
     }
 
     /**
@@ -70,6 +75,7 @@ public class TaskServiceImpl implements TaskService {
      * @return a list of all created tasks
      */
     public List<TaskDTO> getAllTasks() {
+        log.info("Returning all created tasks");
         return taskRepository.findAll().stream()
                 .map(taskEntity -> modelMapper.map(taskEntity, TaskDTO.class))
                 .collect(Collectors.toList());
@@ -86,14 +92,22 @@ public class TaskServiceImpl implements TaskService {
         TaskEntity taskEntity = taskRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(id, MODEL_NAME));
         Task primaryTask = modelMapper.map(taskEntity, Task.class);
+        TaskStatus taskStatus;
 
         try {
-            taskEntity.setStatus(TaskStatus.valueOf(status));
+            taskStatus = TaskStatus.valueOf(status);
         } catch (IllegalArgumentException e) {
             throw new WrongTaskStatusException(status);
         }
+        Task taskToValidate = Task.builder()
+                .name(taskEntity.getName())
+                .status(taskStatus)
+                .build();
+        taskValidator.validate(taskToValidate, List.of(TaskCountFilter.class));
+        taskEntity.setStatus(taskStatus);
 
         TaskEntity updatedEntity = taskRepository.save(taskEntity);
+        log.info("Task status with id %d has been updated".formatted(id));
         telegramTaskUpdateService.sendTaskUpdatedMessage(primaryTask,
                 modelMapper.map(updatedEntity, Task.class));
     }
@@ -115,6 +129,7 @@ public class TaskServiceImpl implements TaskService {
         taskEntity.setName(task.getName());
 
         TaskEntity updatedEntity = taskRepository.save(taskEntity);
+        log.info("Task fields with id %d have been updated".formatted(updatedEntity.getId()));
         telegramTaskUpdateService.sendTaskUpdatedMessage(primaryTask,
                 modelMapper.map(updatedEntity, Task.class));
     }

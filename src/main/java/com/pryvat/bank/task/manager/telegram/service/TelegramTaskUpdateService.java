@@ -7,16 +7,18 @@ import com.pryvat.bank.task.manager.telegram.constants.StandartMessages;
 import com.pryvat.bank.task.manager.telegram.dto.TelegramTaskDTO;
 import com.pryvat.bank.task.manager.telegram.reply.ReplyKeyboardMarkupProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * TelegramTaskUpdateService that sends all the task updates to the user
  */
-@Component
+@Service
 @RequiredArgsConstructor
+@Log4j2
 public class TelegramTaskUpdateService {
     private final TelegramSendingService telegramSendingService;
     private final ReplyKeyboardMarkupProvider replyKeyboardMarkupProvider;
@@ -28,6 +30,7 @@ public class TelegramTaskUpdateService {
      * @param task that have been created
      */
     public void sendTaskCreationMessage(Task task) {
+        log.info("Sending created task notification to telegram users");
         sendUpdateMessageToAllUsers(taskCreatedMessage(modelMapper.map(task, TelegramTaskDTO.class)));
     }
 
@@ -37,6 +40,7 @@ public class TelegramTaskUpdateService {
      * @param updatedTask task after updating
      */
     public void sendTaskUpdatedMessage(Task primaryTask, Task updatedTask) {
+        log.info("Sending updated task notification to telegram users");
         sendUpdateMessageToAllUsers(taskUpdatedMessage(modelMapper.map(primaryTask, TelegramTaskDTO.class),
                 modelMapper.map(updatedTask, TelegramTaskDTO.class)));
     }
