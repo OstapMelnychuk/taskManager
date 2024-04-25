@@ -6,8 +6,7 @@ import com.pryvat.bank.task.manager.entity.task.TaskStatus;
 import com.pryvat.bank.task.manager.exception.EntityNotFoundException;
 import com.pryvat.bank.task.manager.exception.TaskValidationException;
 import com.pryvat.bank.task.manager.exception.WrongTaskStatusException;
-import com.pryvat.bank.task.manager.model.TaskDTO;
-import com.pryvat.bank.task.manager.repository.task.TaskRepository;
+import com.pryvat.bank.task.manager.repository.h2.task.H2TaskRepository;
 import com.pryvat.bank.task.manager.service.task.TaskService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
@@ -39,7 +38,7 @@ class TaskServiceImplTest {
     @Autowired
     private TaskService taskService;
     @Autowired
-    private TaskRepository taskRepository;
+    private H2TaskRepository taskRepository;
 
     @Test
     @Order(1)
@@ -60,7 +59,7 @@ class TaskServiceImplTest {
 
     @Test
     void getAllTasks() {
-        List<TaskDTO> allTasks = taskService.getAllTasks();
+        List<Task> allTasks = taskService.getAllTasks();
 
         assertEquals(2, allTasks.size());
     }
@@ -115,7 +114,7 @@ class TaskServiceImplTest {
     void updateTaskFields() {
         Task task = Task.builder()
                 .id(100L)
-                .name("First task")
+                .name("first_task")
                 .status(TaskStatus.IN_PROGRESS)
                 .description("somedescription")
                 .build();

@@ -3,11 +3,8 @@ package com.pryvat.bank.task.manager.exception.controller;
 import com.pryvat.bank.task.manager.exception.EntityNotFoundException;
 import com.pryvat.bank.task.manager.exception.TaskValidationException;
 import com.pryvat.bank.task.manager.exception.WrongTaskStatusException;
-import com.pryvat.bank.task.manager.router.DataSourceRouter;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.DataAccessResourceFailureException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,7 +13,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @RestControllerAdvice
 @Log4j2
@@ -51,18 +47,6 @@ public class ExceptionHandlerController extends ResponseEntityExceptionHandler {
     public Map<String, String> handleWrongTaskStatusException(RuntimeException ex) {
         log.error(ex);
         return prepareErrorMessage(ex.getMessage());
-    }
-
-    @ExceptionHandler(value = {DataAccessResourceFailureException.class, InvalidDataAccessResourceUsageException.class})
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, String> changeDBToPostgres(RuntimeException e) {
-        if (Objects.isNull(DataSourceRouter.getDataSourceKey()) || DataSourceRouter.getDataSourceKey().equals("h2")) {
-            log.error(e);
-            log.info("Switching database to postgres");
-            DataSourceRouter.setDataSourceKey("postgresql");
-            System.out.println(DataSourceRouter.getDataSourceKey());
-        }
-        return prepareErrorMessage("Changing database source. Please repeat request");
     }
 
     private Map<String, String> prepareErrorMessage(String errorMessage) {

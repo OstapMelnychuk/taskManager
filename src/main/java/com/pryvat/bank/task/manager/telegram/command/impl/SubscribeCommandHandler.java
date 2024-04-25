@@ -1,7 +1,8 @@
 package com.pryvat.bank.task.manager.telegram.command.impl;
 
 import com.pryvat.bank.task.manager.entity.telegram.TelegramUser;
-import com.pryvat.bank.task.manager.repository.telegram.TelegramUserRepository;
+import com.pryvat.bank.task.manager.repository.h2.telegram.H2TelegramUserRepository;
+import com.pryvat.bank.task.manager.repository.postgres.telegram.PostgresTelegramUserRepository;
 import com.pryvat.bank.task.manager.telegram.command.CommandHandler;
 import com.pryvat.bank.task.manager.telegram.constants.Commands;
 import com.pryvat.bank.task.manager.telegram.constants.StandartMessages;
@@ -10,6 +11,8 @@ import com.pryvat.bank.task.manager.telegram.reply.ReplyKeyboardMarkupProvider;
 import com.pryvat.bank.task.manager.telegram.service.TelegramSendingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,7 +22,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Log4j2
 public class SubscribeCommandHandler implements CommandHandler {
-    private final TelegramUserRepository telegramUserRepository;
+    private final H2TelegramUserRepository h2TelegramUserRepository;
+    private final PostgresTelegramUserRepository postgresTelegramUserRepository;
     private final TelegramSendingService telegramSendingService;
     private final ReplyKeyboardMarkupProvider replyKeyboardMarkupProvider;
 
@@ -34,7 +38,12 @@ public class SubscribeCommandHandler implements CommandHandler {
                 .chatId(userRequest.getId())
                 .name(userRequest.getUpdate().getMessage().getFrom().getUserName())
                 .build();
-        telegramUserRepository.save(telegramUser);
+        try {
+            h2TelegramUserRepository.save(telegramUser);
+        } catch (DataAccessResourceFailureException | InvalidDataAccessResourceUsageException e) {
+            log.error("Failed to save telegram user to a H2 database", e);
+        }
+        postgresTelegramUserRepository.save(telegramUser);
         telegramSendingService.sendMessage(userRequest.getId(),
                 StandartMessages.SUBSCRIBE_MESSAGE,
                 replyKeyboardMarkupProvider.buildMainKeyboard(userRequest.getId()));

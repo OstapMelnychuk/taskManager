@@ -1,7 +1,6 @@
 package com.pryvat.bank.task.manager.service.task;
 
 import com.pryvat.bank.task.manager.domain.Task;
-import com.pryvat.bank.task.manager.model.TaskDTO;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public interface TaskService {
      * Method that returns all created tasks
      * @return The list of all created tasks
      */
-    List<TaskDTO> getAllTasks();
+    List<Task> getAllTasks();
 
     /**
      * Method that updates task status

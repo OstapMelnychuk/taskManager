@@ -7,7 +7,7 @@ import com.pryvat.bank.task.manager.entity.task.TaskStatus;
 import com.pryvat.bank.task.manager.model.Status;
 import com.pryvat.bank.task.manager.model.TaskDTO;
 import com.pryvat.bank.task.manager.model.TaskRequest;
-import com.pryvat.bank.task.manager.repository.task.TaskRepository;
+import com.pryvat.bank.task.manager.repository.h2.task.H2TaskRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -43,7 +43,7 @@ public class TaskApiTest {
     @Autowired
     private MockMvc mvc;
     @Autowired
-    private TaskRepository taskRepository;
+    private H2TaskRepository taskRepository;
     @Autowired
     private ObjectMapper objectMapper;
     private final String TASK_URL = "/task";

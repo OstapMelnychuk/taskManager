@@ -2,7 +2,8 @@ package com.pryvat.bank.task.manager.telegram.service;
 
 import com.pryvat.bank.task.manager.domain.Task;
 import com.pryvat.bank.task.manager.entity.telegram.TelegramUser;
-import com.pryvat.bank.task.manager.repository.telegram.TelegramUserRepository;
+import com.pryvat.bank.task.manager.repository.h2.telegram.H2TelegramUserRepository;
+import com.pryvat.bank.task.manager.repository.postgres.telegram.PostgresTelegramUserRepository;
 import com.pryvat.bank.task.manager.telegram.constants.StandartMessages;
 import com.pryvat.bank.task.manager.telegram.dto.TelegramTaskDTO;
 import com.pryvat.bank.task.manager.telegram.reply.ReplyKeyboardMarkupProvider;
@@ -22,7 +23,8 @@ import java.util.List;
 public class TelegramTaskUpdateService {
     private final TelegramSendingService telegramSendingService;
     private final ReplyKeyboardMarkupProvider replyKeyboardMarkupProvider;
-    private final TelegramUserRepository telegramUserRepository;
+    private final H2TelegramUserRepository h2TelegramUserRepository;
+    private final PostgresTelegramUserRepository postgresTelegramUserRepository;
     private final ModelMapper modelMapper;
 
     /**
@@ -46,7 +48,13 @@ public class TelegramTaskUpdateService {
     }
 
     private void sendUpdateMessageToAllUsers(String message) {
-        List<TelegramUser> telegramUsers = telegramUserRepository.findAll();
+        List<TelegramUser> telegramUsers;
+        try {
+            telegramUsers = h2TelegramUserRepository.findAll();
+        } catch (Exception e) {
+            log.error("Failed to retrieve users from H2 database", e);
+            telegramUsers = postgresTelegramUserRepository.findAll();
+        }
         telegramUsers.forEach(telegramUser -> telegramSendingService.sendMessage(telegramUser.getChatId(),
                 message,
                 replyKeyboardMarkupProvider.buildMainKeyboard(telegramUser.getChatId())));

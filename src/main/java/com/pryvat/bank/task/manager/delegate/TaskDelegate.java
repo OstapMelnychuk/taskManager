@@ -50,7 +50,10 @@ public class TaskDelegate implements TaskApiDelegate {
     @Override
     public ResponseEntity<List<TaskDTO>> getAllTasks() {
         log.info("Received request for getting all the tasks");
-        return ResponseEntity.ok(taskService.getAllTasks());
+        List<TaskDTO> taskDTOList = taskService.getAllTasks().stream()
+                .map(task -> modelMapper.map(task, TaskDTO.class))
+                .toList();
+        return ResponseEntity.ok(taskDTOList);
     }
 
     @Override
